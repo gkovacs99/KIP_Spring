@@ -11,4 +11,9 @@ public class MainController {
         model.addAttribute("message", "Hello Thymeleaf!");
         return "index.html";
     }
+
+    @RequestMapping("/login")
+    public String login() {
+        return "login.html";
+    }
 }
