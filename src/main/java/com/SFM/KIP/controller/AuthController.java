@@ -32,7 +32,7 @@ public class AuthController {
     @GetMapping("/register")
     public String register(Model model){
         model.addAttribute("registerForm", new RegisterForm("", "", ""));
-        return "regisret";
+        return "register";
     }
 
     @PostMapping("/register")
