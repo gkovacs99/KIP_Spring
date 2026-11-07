@@ -13,7 +13,7 @@ public class DashboardController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication auth, HttpServletRequest request){
-        String username = auth.getName;
+        String username = auth.getName();
 
         model.addAttribute("upcomingAppointments", List.of());
         model.addAttribute("pendingProposals", List.of());
