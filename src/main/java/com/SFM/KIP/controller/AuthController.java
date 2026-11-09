@@ -1,6 +1,7 @@
 package com.SFM.KIP.controller;
 
 import com.SFM.KIP.dto.RegisterForm;
+import com.SFM.KIP.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,12 @@ import java.net.Authenticator;
 
 @Controller
 public class AuthController {
+
+    private final UserService userService;
+
+    public AuthController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/")
     public String index (Authentication auth) {
@@ -37,10 +44,16 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerSubmit(@Valid @ModelAttribute RegisterForm registerForm, BindingResult result, RedirectAttributes ra){
+
+        if (!result.hasFieldErrors("email") && userService.emailExists(registerForm.email().trim().toLowerCase())){
+            result.rejectValue("email", "taken", "A megadott e-mail cím már regisztrálva van.");
+        }
+
         if(result.hasErrors()){
             return "register";
         }
-        //felhasználót majd menteni kell USER szerepkörrel
+
+        userService.registerPatient(registerForm);
         ra.addFlashAttribute("message", "Sikeres regisztráció, most már beléphet.");
         return "redirec:/login";
     }
