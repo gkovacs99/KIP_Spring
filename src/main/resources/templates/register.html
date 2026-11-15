@@ -15,8 +15,9 @@
 
         <h2 class="text-info mb-4 text-center">Fiók létrehozása</h2>
 
-        <form id="registerForm">
+        <form id="registerForm" action="/register" method="POST">
 
+            <!--
             <div class="mb-3">
                 <label for="roleSelect" class="form-label">Regisztráció típusa:</label>
                 <select class="form-select" id="roleSelect" name="role" required>
@@ -25,6 +26,7 @@
                     <option value="employee">Alkalmazott (Orvos / Nővér)</option>
                 </select>
             </div>
+            -->
 
             <div class="mb-3">
                 <label for="name" class="form-label">Teljes név:</label>
@@ -36,11 +38,14 @@
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
 
+            <!--
             <div class="mb-3">
                 <label for="phone" class="form-label">Telefonszám:</label>
                 <input type="tel" class="form-control" id="phone" name="phone" placeholder="+36..." required>
             </div>
+            -->
 
+            <!--
             <div class="mb-3 d-none" id="tajFieldContainer">
                 <label for="tajNumber" class="form-label">TAJ szám:</label>
                 <input type="text" class="form-control" id="tajNumber" name="tajNumber" placeholder="Pl.: 123 456 789">
@@ -50,6 +55,7 @@
                 <label for="employeeId" class="form-label">Alkalmazotti azonosító (csak orvosoknak és nővéreknek):</label>
                 <input type="text" class="form-control" id="employeeId" name="employeeId" placeholder="Pl.: KIP-1234">
             </div>
+            -->
 
             <div class="mb-4">
                 <label for="password" class="form-label">Jelszó:</label>

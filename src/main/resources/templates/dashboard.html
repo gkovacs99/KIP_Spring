@@ -1,10 +1,178 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KIP - Vezérlőpult</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body class="bg-light">
 
+<nav class="navbar navbar-expand-lg navbar-dark bg-info shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/dashboard">KIP Rendszer</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link text-white btn btn-info" href="/logout">Kijelentkezés</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-secondary">Vezérlőpult</h2>
+
+    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <span th:text="${message}">Rendszerüzenet helye</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="row">
+
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100 border-start border-info border-4">
+                <div class="card-body">
+                    <h5 class="card-title text-info mb-3">Közelgő időpontok</h5>
+
+                    <p th:if="${#lists.isEmpty(upcomingAppointments)}" class="card-text text-muted">
+                        Jelenleg nincs megjeleníthető időpont.
+                    </p>
+
+                    <div th:unless="${#lists.isEmpty(upcomingAppointments)}" class="table-responsive">
+                        <table class="table table-hover table-sm align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Időpont</th>
+                                <th>Orvos</th>
+                                <th>Páciens</th>
+                                <th>Szoba</th>
+                                <th>Státusz</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="appt : ${upcomingAppointments}">
+                                <td th:text="${#temporals.format(appt.startTime, 'yyyy.MM.dd. HH:mm')}">2026.11.15. 10:00</td>
+
+                                <td th:text="${appt.doctor.name}">Dr. Kovács</td>
+                                <td th:text="${appt.patient.name}">Páciens neve</td>
+
+                                <td th:text="${appt.room.name}">101-es szoba</td>
+
+                                <td>
+                                    <span class="badge bg-info text-dark" th:text="${appt.status}">BOOKED</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm h-100 border-start border-info border-4">
+                <div class="card-body">
+                    <h5 class="card-title text-info">Függőben lévő kérelmek</h5>
+                    <p class="card-text text-muted">Nincsenek új kérelmek.</p>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${pendingDuties != null}" class="col-12 mb-4">
+
+            <div class="card shadow-sm h-100 border-start border-info border-4"
+                 th:classappend="${not #lists.isEmpty(pendingDuties.?[mandatory == true])} ? 'border-danger' : 'border-info'">
+                <div class="card-body">
+
+                    <h5 class="card-title text-info mb-3"
+                        th:classappend="${not #lists.isEmpty(pendingDuties.?[mandatory == true])} ? 'text-danger' : 'text-info'">
+                        Függőben lévő ügyeletek
+                    </h5>
+
+                    <p th:if="${#lists.isEmpty(pendingDuties)}" class="card-text text-muted">
+                        Jelenleg nincs aktív ügyeleti feladat.
+                    </p>
+
+                    <div th:unless="${#lists.isEmpty(pendingDuties)}" class="table-responsive">
+                        <table class="table table-hover table-sm align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Dátum</th>
+                                <th>Időtartam</th>
+                                <th>Jelleg</th>
+                                <th>Státusz</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="duty : ${pendingDuties}">
+                                <td th:text="${#temporals.format(duty.date, 'yyyy.MM.dd.')}">2026.11.15.</td>
+                                <td>
+                                    <span th:text="${#temporals.format(duty.startTime, 'HH:mm')}">08:00</span> -
+                                    <span th:text="${#temporals.format(duty.endTime, 'HH:mm')}">16:00</span>
+                                </td>
+                                <td>
+                                    <!-- Ez a táblázaton belüli badge színe, amit korábban megbeszéltünk -->
+                                    <span th:if="${duty.mandatory}" class="badge bg-danger">Kötelező</span>
+                                    <span th:unless="${duty.mandatory}" class="badge bg-info text-dark">Önkéntes</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning text-dark" th:text="${duty.status}">OFFERED</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${doctorAppointments != null}" class="col-12 mb-4">
+            <div class="card shadow-sm h-100 border-start border-info border-4">
+                <div class="card-body">
+                    <h5 class="card-title text-info">Orvosok időpontjai</h5>
+                    <p class="card-text text-muted">Nincs megjeleníthető adat.</p>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${myConsultationDays != null}" class="col-12 mb-4">
+            <div class="card shadow-sm h-100 border-start border-info border-4">
+                <div class="card-body">
+                    <h5 class="card-title text-info">Saját rendelési napok</h5>
+                    <p class="card-text text-muted">Még nincs kiírva rendelési idő.</p>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${unassignedRooms != null}" class="col-12 mb-4">
+            <div class="card shadow-sm h-100 text-center">
+                <div class="card-body">
+                    <h1 class="display-4 text-info fw-bold" th:text="${unassignedRooms}">0</h1>
+                    <h5 class="card-title text-secondary">Kiosztatlan szobák</h5>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${employeeCount != null}" class="col-12 mb-4">
+            <div class="card shadow-sm h-100 text-center">
+                <div class="card-body">
+                    <h1 class="display-4 text-info fw-bold" th:text="${employeeCount}">0</h1>
+                    <h5 class="card-title text-secondary">Összes alkalmazott</h5>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
