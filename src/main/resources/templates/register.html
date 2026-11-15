@@ -10,45 +10,49 @@
 
 <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
 
-    <form th:action="@{/register}" method="post" th:object="${registerForm}">
+    <div class="w-100" style="max-width: 450px;">
 
-        <div class="mb-3">
-            <label for="name" class="form-label">Teljes név:</label>
-            <input type="text" class="form-control" id="name" th:field="*{name}" required>
-            <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        <form th:action="@{/register}" method="post" th:object="${registerForm}">
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Teljes név:</label>
+                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email cím:</label>
+                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Telefonszám:</label>
+                <input type="tel" class="form-control" id="phone" th:field="*{phone}" placeholder="+36..." required>
+                <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+            </div>
+
+            <div class="mb-4">
+                <label for="password" class="form-label">Jelszó:</label>
+                <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+
+            <div class="mb-4">
+                <label for="confirmPassword" class="form-label">Jelszó megerősítése:</label>
+                <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+            </div>
+
+            <button type="submit" class="btn btn-info w-100 py-2">Regisztráció</button>
+
+        </form>
+
+        <div class="mt-4 text-center">
+            <span class="text-muted d-block mb-2">Már regisztrált?</span>
+            <a th:href="@{/login}" class="btn btn-outline-secondary w-100 py-2">Vissza a bejelentkezéshez</a>
         </div>
 
-        <div class="mb-3">
-            <label for="email" class="form-label">Email cím:</label>
-            <input type="email" class="form-control" id="email" th:field="*{email}" required>
-            <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="phone" class="form-label">Telefonszám:</label>
-            <input type="tel" class="form-control" id="phone" th:field="*{phone}" placeholder="+36..." required>
-            <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
-        </div>
-
-        <div class="mb-4">
-            <label for="password" class="form-label">Jelszó:</label>
-            <input type="password" class="form-control" id="password" th:field="*{password}" required>
-            <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-        </div>
-
-        <div class="mb-4">
-            <label for="confirmPassword" class="form-label">Jelszó megerősítése:</label>
-            <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" required>
-            <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
-        </div>
-
-        <button type="submit" class="btn btn-info w-100 py-2">Regisztráció</button>
-
-    </form>
-
-    <div class="mt-4 text-center">
-        <span class="text-muted d-block mb-2">Már van hozzáférése a rendszerhez?</span>
-        <a th:href="@{/login}" class="btn btn-outline-secondary w-100 py-2">Vissza a bejelentkezéshez</a>
     </div>
 
 </div>
