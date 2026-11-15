@@ -1,5 +1,6 @@
 package com.SFM.KIP.controller;
 
+import com.SFM.KIP.dto.LoginForm;
 import com.SFM.KIP.dto.RegisterForm;
 import com.SFM.KIP.service.UserService;
 import jakarta.validation.Valid;
@@ -28,17 +29,24 @@ public class AuthController {
         if (auth != null && auth.isAuthenticated()){
             return "redirect:/dashboard";
         }
-        return "index";
+        return "redirect:/login";
     }
 
     @GetMapping("/login")
-    public String login(){
+    public String login(Model model,Authentication auth) {
+        if (auth != null && auth.isAuthenticated()){
+            return "redirect:/dashboard";
+        }
+        model.addAttribute("loginForm", new LoginForm("", ""));
         return "login";
     }
 
     @GetMapping("/register")
-    public String register(Model model){
-        model.addAttribute("registerForm", new RegisterForm("", "", ""));
+    public String register(Model model, Authentication auth) {
+        if (auth != null && auth.isAuthenticated()){
+            return "redirect:/dashboard";
+        }
+        model.addAttribute("registerForm", new RegisterForm("", "", "", "", ""));
         return "register";
     }
 
@@ -55,7 +63,7 @@ public class AuthController {
 
         userService.registerPatient(registerForm);
         ra.addFlashAttribute("message", "Sikeres regisztráció, most már beléphet.");
-        return "redirec:/login";
+        return "redirect:/login";
     }
 
 }
