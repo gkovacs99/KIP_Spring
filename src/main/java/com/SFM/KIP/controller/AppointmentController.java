@@ -1,6 +1,12 @@
 package com.SFM.KIP.controller;
 
+import com.SFM.KIP.dto.AppointmentSlot;
+import com.SFM.KIP.dto.DoctorOption;
+import com.SFM.KIP.entity.User;
+import com.SFM.KIP.service.AppointmentService;
+
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,47 +16,106 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
-@RequestMapping("/appointments")
 public class AppointmentController {
 
+    private final AppointmentService appointmentService;
+
+    public AppointmentController(AppointmentService appointmentService) {
+        this.appointmentService = appointmentService;
+    }
+
     @GetMapping("/my-appointments")
-    public String myAppointments(Model model){
-        model.addAttribute("appointments", List.of());
+    public String myAppointments(Model model, Authentication auth) {
+
+        model.addAttribute(
+                "appointments",
+                appointmentService.getMyAppointments(auth.getName())
+        );
+
+        model.addAttribute(
+                "departments",
+                appointmentService.getDepartments()
+        );
 
         return "my-appointments";
     }
 
-    //foglalás
-    @PostMapping
-    public String book(@RequestParam Long doctorId, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime startTime, RedirectAttributes ra){
-        ra.addFlashAttribute("message", "Sikeres foglalás.");
+    @GetMapping("/appointments/doctors")
+    @ResponseBody
+    public List<DoctorOption> getDoctors(
+            @RequestParam Long departmentId
+    ) {
 
-        return "redirect:/dashboard";
+        return appointmentService.getDoctors(departmentId)
+                .stream()
+                .map(doctor -> new DoctorOption(
+                        doctor.getId(),
+                        doctor.getName()
+                ))
+                .toList();
     }
 
-    //saját időpont törtlése
-    @PostMapping("/{id}/cancel")
-    public String cancel(@PathVariable Long id, RedirectAttributes ra){
-        ra.addFlashAttribute("message", "Időpont törlése");
+    @GetMapping("/appointments/slots")
+    @ResponseBody
+    public List<AppointmentSlot> getAvailableSlots(
+            @RequestParam Long doctorId
+    ) {
 
-        return "redirect:/dashboard";
+        return appointmentService.getAvailableSlots(doctorId);
     }
 
-    //nurse lemondás+újrafoglalás űrlap
-    @GetMapping ("/{id}/reschedule")
-    public String rescheduleForm(@PathVariable Long id, Model model){
-        model.addAttribute("appointmentId", id);
-        model.addAttribute("freeSlots", List.of());
+    @PostMapping("/my-appointments/book")
+    public String book(
+            @RequestParam Long doctorId,
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime startTime,
+            Authentication auth,
+            RedirectAttributes ra
+    ) {
 
-        return "reschedule";
+        try {
+            appointmentService.bookAppointment(
+                    auth.getName(),
+                    doctorId,
+                    startTime
+            );
+
+            ra.addFlashAttribute(
+                    "message",
+                    "Sikeresen lefoglalta az időpontot."
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            ra.addFlashAttribute("error", e.getMessage());
+
+        }
+
+        return "redirect:/my-appointments";
     }
 
-    //nurse lemondás + újrafoglalás mentés
-    @PostMapping("/{id}/reschedule")
-    public String reschedule(@PathVariable Long id,  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime newStartTime, RedirectAttributes ra){
-        ra.addFlashAttribute("message", "Iőpont lemondva, új időponmmt felajánlva.");
+    @PostMapping("/my-appointments/{id}/cancel")
+    public String cancel(
+            @PathVariable Long id,
+            Authentication auth,
+            RedirectAttributes ra
+    ) {
 
-        return "redirect:/dashboard";
+        try {
+            appointmentService.cancelAppointment(auth.getName(), id);
+
+            ra.addFlashAttribute(
+                    "message",
+                    "Az időpont lemondása sikeres."
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            ra.addFlashAttribute("error", e.getMessage());
+
+        }
+
+        return "redirect:/my-appointments";
     }
-
 }

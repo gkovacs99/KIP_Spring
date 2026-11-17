@@ -47,7 +47,6 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/h2-console/**"
                         ).permitAll()
-
                         .requestMatchers("/admin/**").hasRole("DIRECTOR")
                         .requestMatchers("/schedule/**", "/rooms/**").hasRole("SENIOR")
                         .requestMatchers("/consultation-days/**").hasRole("DOCTOR")
