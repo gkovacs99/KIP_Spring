@@ -30,6 +30,7 @@ public class UserService {
         User user = new User();
         user.setName(form.name().trim());
         user.setEmail(form.email().trim().toLowerCase());
+        user.setPhone(form.phone().trim());
         user.setPassword(passwordEncoder.encode(form.password()));
         user.setRole(roleRepository.findByName("USER").orElseThrow());
         userRepository.save(user);

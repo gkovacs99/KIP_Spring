@@ -1,70 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>KIP - Registration</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
+    <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 <body class="bg-light">
 
 <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
 
-    <div class="p-4 bg-white shadow rounded" style="width: 100%; max-width: 450px;">
+    <div class="w-100" style="max-width: 450px;">
 
-        <h2 class="text-info mb-4 text-center">Fiók létrehozása</h2>
-
-        <form id="registerForm" action="/register" method="POST">
-
-            <!--
-            <div class="mb-3">
-                <label for="roleSelect" class="form-label">Regisztráció típusa:</label>
-                <select class="form-select" id="roleSelect" name="role" required>
-                    <option value="" selected disabled>Kérem válasszon...</option>
-                    <option value="patient">Páciens</option>
-                    <option value="employee">Alkalmazott (Orvos / Nővér)</option>
-                </select>
-            </div>
-            -->
+        <form th:action="@{/register}" method="post" th:object="${registerForm}">
 
             <div class="mb-3">
                 <label for="name" class="form-label">Teljes név:</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label">Email cím:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
             </div>
 
-            <!--
             <div class="mb-3">
                 <label for="phone" class="form-label">Telefonszám:</label>
-                <input type="tel" class="form-control" id="phone" name="phone" placeholder="+36..." required>
+                <input type="tel" class="form-control" id="phone" th:field="*{phone}" placeholder="+36..." required>
+                <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
             </div>
-            -->
-
-            <!--
-            <div class="mb-3 d-none" id="tajFieldContainer">
-                <label for="tajNumber" class="form-label">TAJ szám:</label>
-                <input type="text" class="form-control" id="tajNumber" name="tajNumber" placeholder="Pl.: 123 456 789">
-            </div>
-
-            <div class="mb-3 d-none" id="employeeFieldContainer">
-                <label for="employeeId" class="form-label">Alkalmazotti azonosító (csak orvosoknak és nővéreknek):</label>
-                <input type="text" class="form-control" id="employeeId" name="employeeId" placeholder="Pl.: KIP-1234">
-            </div>
-            -->
 
             <div class="mb-4">
                 <label for="password" class="form-label">Jelszó:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
             </div>
 
             <div class="mb-4">
                 <label for="confirmPassword" class="form-label">Jelszó megerősítése:</label>
-                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
             </div>
 
             <button type="submit" class="btn btn-info w-100 py-2">Regisztráció</button>
@@ -72,14 +49,12 @@
         </form>
 
         <div class="mt-4 text-center">
-            <span class="text-muted d-block mb-2">Már van hozzáférése a rendszerhez?</span>
-            <a href="/login" class="btn btn-outline-secondary w-100 py-2">Vissza a bejelentkezéshez</a>
+            <span class="text-muted d-block mb-2">Már regisztrált?</span>
+            <a th:href="@{/login}" class="btn btn-outline-secondary w-100 py-2">Vissza a bejelentkezéshez</a>
         </div>
 
     </div>
 
 </div>
-
-<script src="js/script.js"></script>
 </body>
 </html>

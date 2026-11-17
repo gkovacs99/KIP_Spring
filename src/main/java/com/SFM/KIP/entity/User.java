@@ -31,6 +31,9 @@ public class User {
     @Column(nullable = false)
     private boolean active = true;
 
+    @Column(nullable = false, length = 20)
+    private String phone;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "role_id")
     private Role role;
