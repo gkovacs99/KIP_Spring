@@ -5,6 +5,7 @@ import com.SFM.KIP.dto.DoctorOption;
 import com.SFM.KIP.entity.User;
 import com.SFM.KIP.service.AppointmentService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -18,11 +19,8 @@ import java.util.List;
 @Controller
 public class AppointmentController {
 
-    private final AppointmentService appointmentService;
-
-    public AppointmentController(AppointmentService appointmentService) {
-        this.appointmentService = appointmentService;
-    }
+    @Autowired
+    private AppointmentService appointmentService;
 
     @GetMapping("/my-appointments")
     public String myAppointments(Model model, Authentication auth) {

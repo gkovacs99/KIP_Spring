@@ -4,6 +4,7 @@ import com.SFM.KIP.dto.LoginForm;
 import com.SFM.KIP.dto.RegisterForm;
 import com.SFM.KIP.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,11 +19,8 @@ import java.net.Authenticator;
 @Controller
 public class AuthController {
 
-    private final UserService userService;
-
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/")
     public String index (Authentication auth) {
