@@ -8,8 +8,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin")
 public class AdminController {
+
+    @GetMapping("/admin")
+    public String admin(Model model) {
+        return "admin";
+    }
 
     @GetMapping("/employees")
     public String employees(Model model) {

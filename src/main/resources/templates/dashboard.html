@@ -25,45 +25,44 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-
             <ul class="navbar-nav me-auto">
 
                 <!-- BETEG: Időpontfoglalás -->
-                <li class="nav-item" sec:authorize="hasRole('USER')">
+                <li class="nav-item" th:if="${currentRole == 'USER'}">
                     <a class="nav-link text-white" th:href="@{/my-appointments}">
                         Időpontfoglalás
                     </a>
                 </li>
 
                 <!-- Ápolói funkciók -->
-                <li class="nav-item" sec:authorize="hasRole('NURSE')">
+                <li class="nav-item" th:if="${currentRole == 'NURSE'}">
                     <a class="nav-link text-white" th:href="@{/duties}">
                         Ügyeleteim
                     </a>
                 </li>
 
                 <!-- Orvosi funkciók -->
-                <li class="nav-item" sec:authorize="hasRole('DOCTOR')">
+                <li class="nav-item" th:if="${currentRole == 'DOCTOR'}">
                     <a class="nav-link text-white" th:href="@{/consultation-days}">
                         Rendelési napjaim
                     </a>
                 </li>
 
                 <!-- Vezető orvosi funkciók -->
-                <li class="nav-item" sec:authorize="hasRole('SENIOR')">
+                <li class="nav-item" th:if="${currentRole == 'SENIOR'}">
                     <a class="nav-link text-white" th:href="@{/schedule}">
                         Beosztások
                     </a>
                 </li>
 
-                <li class="nav-item" sec:authorize="hasRole('SENIOR')">
+                <li class="nav-item" th:if="${currentRole == 'SENIOR'}">
                     <a class="nav-link text-white" th:href="@{/rooms}">
                         Rendelők
                     </a>
                 </li>
 
                 <!-- Igazgatói funkciók -->
-                <li class="nav-item" sec:authorize="hasRole('DIRECTOR')">
+                <li class="nav-item" th:if="${currentRole == 'DIRECTOR'}">
                     <a class="nav-link text-white" th:href="@{/admin}">
                         Adminisztráció
                     </a>
