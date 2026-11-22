@@ -16,13 +16,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping ("/proposals")
 public class ProposalController {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    @GetMapping
+    @GetMapping("/proposals")
     public String myProposals(Model model){
         model.addAttribute("proposals", List.of());
 

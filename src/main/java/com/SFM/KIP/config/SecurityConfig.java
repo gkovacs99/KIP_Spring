@@ -51,7 +51,6 @@ public class SecurityConfig {
                         .requestMatchers("/schedule/**", "/rooms/**").hasRole("SENIOR")
                         .requestMatchers("/consultation-days/**").hasRole("DOCTOR")
                         .requestMatchers("/duties/**").hasRole("NURSE")
-
                         .anyRequest().hasRole("USER")
                 )
 

@@ -18,8 +18,12 @@ public class DutyShift {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "emoloyee_id")
+    @JoinColumn(name = "employee_id")
     private User employee;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nurse_id")
+    private User nurse;
 
     @Column(name = "duty_date", nullable = false)
     private LocalDate date;
@@ -35,7 +39,7 @@ public class DutyShift {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private DutyStatus status = DutyStatus.OFFERED;
+    private DutyStatus status = DutyStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "created_by_id")

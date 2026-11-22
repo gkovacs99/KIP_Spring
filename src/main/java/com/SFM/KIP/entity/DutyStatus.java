@@ -1,7 +1,8 @@
 package com.SFM.KIP.entity;
 
 public enum DutyStatus {
-    OFFERED,
-    ACCEPTED,
-    DECLINED
+    PENDING,    // Jóváhagysra vár
+    APPROVED,   // Elfogadva
+    REJECTED,   // Elutasítva
+    COMPLETED   // Teljesítve
 }

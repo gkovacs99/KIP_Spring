@@ -22,6 +22,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByAssignedDoctor(User doctor);
 
+    List<User> findAllByRole_Name(String roleName);
+
     @Query("""
     SELECT u
     FROM User u

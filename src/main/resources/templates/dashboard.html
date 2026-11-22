@@ -28,34 +28,34 @@
             <ul class="navbar-nav me-auto">
 
                 <!-- BETEG: Időpontfoglalás -->
-                <li class="nav-item" th:if="${currentRole == 'USER'}">
+                <li class="nav-item" th:if="${currentRole == 'USER' || currentRole == 'NURSE' || currentRole == 'DOCTOR' || currentRole == 'SENIOR' || currentRole == 'DIRECTOR'}">
                     <a class="nav-link text-white" th:href="@{/my-appointments}">
                         Időpontfoglalás
                     </a>
                 </li>
 
                 <!-- Ápolói funkciók -->
-                <li class="nav-item" th:if="${currentRole == 'NURSE'}">
+                <li class="nav-item" th:if="${currentRole == 'NURSE' || currentRole == 'DOCTOR' || currentRole == 'SENIOR' || currentRole == 'DIRECTOR'}">
                     <a class="nav-link text-white" th:href="@{/duties}">
                         Ügyeleteim
                     </a>
                 </li>
 
                 <!-- Orvosi funkciók -->
-                <li class="nav-item" th:if="${currentRole == 'DOCTOR'}">
+                <li class="nav-item" th:if="${currentRole == 'DOCTOR' || currentRole == 'SENIOR' || currentRole == 'DIRECTOR'}">
                     <a class="nav-link text-white" th:href="@{/consultation-days}">
                         Rendelési napjaim
                     </a>
                 </li>
 
                 <!-- Vezető orvosi funkciók -->
-                <li class="nav-item" th:if="${currentRole == 'SENIOR'}">
+                <li class="nav-item" th:if="${currentRole == 'SENIOR' || currentRole == 'DIRECTOR'}">
                     <a class="nav-link text-white" th:href="@{/schedule}">
                         Beosztások
                     </a>
                 </li>
 
-                <li class="nav-item" th:if="${currentRole == 'SENIOR'}">
+                <li class="nav-item" th:if="${currentRole == 'SENIOR' || currentRole == 'DIRECTOR'}">
                     <a class="nav-link text-white" th:href="@{/rooms}">
                         Rendelők
                     </a>
@@ -146,44 +146,23 @@
             </div>
         </div>
 
-        <!-- KÖZÖS: Függőben lévő kérelmek -->
+
+        <!-- KÖZÖS: Saját ügyeletek -->
         <div class="col-12 mb-4">
             <div class="card shadow-sm h-100 border-start border-info border-4">
                 <div class="card-body">
 
-                    <h5 class="card-title text-info">Függőben lévő kérelmek</h5>
+                    <h5 class="card-title text-info mb-3">Saját ügyeleteim</h5>
 
-                    <p class="card-text text-muted">
-                        Nincsenek új kérelmek.
+                    <p th:if="${#lists.isEmpty(myDuties)}"
+                       class="text-muted">
+                        Még nincs felvett ügyeleted.
                     </p>
 
-                </div>
-            </div>
-        </div>
-
-        <!-- NURSE: Függőben lévő ügyeletek -->
-        <div sec:authorize="hasRole('NURSE')" class="col-12 mb-4">
-
-            <div class="card shadow-sm h-100 border-start border-info border-4"
-                 th:classappend="${not #lists.isEmpty(pendingDuties.?[mandatory == true])} ? 'border-danger' : ''">
-
-                <div class="card-body">
-
-                    <h5 class="card-title text-info mb-3"
-                        th:classappend="${not #lists.isEmpty(pendingDuties.?[mandatory == true])} ? 'text-danger' : ''">
-                        Függőben lévő ügyeletek
-                    </h5>
-
-                    <p th:if="${#lists.isEmpty(pendingDuties)}"
-                       class="card-text text-muted">
-                        Jelenleg nincs aktív ügyeleti feladat.
-                    </p>
-
-                    <div th:unless="${#lists.isEmpty(pendingDuties)}"
+                    <div th:unless="${#lists.isEmpty(myDuties)}"
                          class="table-responsive">
 
                         <table class="table table-hover table-sm align-middle">
-
                             <thead class="table-light">
                             <tr>
                                 <th>Dátum</th>
@@ -194,7 +173,83 @@
                             </thead>
 
                             <tbody>
+                            <tr th:each="duty : ${myDuties}">
+                                <td th:text="${#temporals.format(duty.date, 'yyyy.MM.dd.')}"></td>
+
+                                <td>
+                                    <span th:text="${#temporals.format(duty.startTime, 'HH:mm')}"></span>
+                                    -
+                                    <span th:text="${#temporals.format(duty.endTime, 'HH:mm')}"></span>
+                                </td>
+
+                                <td>
+                            <span th:if="${duty.mandatory}"
+                                  class="badge bg-danger">Kötelező</span>
+
+                                    <span th:unless="${duty.mandatory}"
+                                          class="badge bg-info text-dark">Önkéntes</span>
+                                </td>
+
+                                <td>
+                            <span th:if="${duty.status.name() == 'PENDING'}"
+                                  class="badge bg-warning text-dark">Elbírálás alatt</span>
+
+                                    <span th:if="${duty.status.name() == 'APPROVED'}"
+                                          class="badge bg-success">Elfogadva</span>
+
+                                    <span th:if="${duty.status.name() == 'REJECTED'}"
+                                          class="badge bg-danger">Elutasítva</span>
+
+                                    <span th:if="${duty.status.name() == 'COMPLETED'}"
+                                          class="badge bg-secondary">Teljesítve</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <a th:href="@{/duties}" class="btn btn-outline-info btn-sm">
+                        Ügyeleteim kezelése
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- SENIOR / DIRECTOR: Függőben lévő kérelmek -->
+        <div th:if="${currentRole == 'SENIOR' or currentRole == 'DIRECTOR'}"
+             class="col-12 mb-4">
+
+            <div class="card shadow-sm h-100 border-start border-warning border-4">
+                <div class="card-body">
+
+                    <h5 class="card-title text-warning mb-3">
+                        Függőben lévő ügyeleti kérelmek
+                    </h5>
+
+                    <p th:if="${#lists.isEmpty(pendingDuties)}"
+                       class="text-muted">
+                        Jelenleg nincs elbírálásra váró ügyeleti kérelem.
+                    </p>
+
+                    <div th:unless="${#lists.isEmpty(pendingDuties)}"
+                         class="table-responsive">
+
+                        <table class="table table-hover table-sm align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Alkalmazott</th>
+                                <th>Dátum</th>
+                                <th>Időtartam</th>
+                                <th>Jelleg</th>
+                                <th>Státusz</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
                             <tr th:each="duty : ${pendingDuties}">
+                                <td th:text="${duty.employee.name}"></td>
 
                                 <td th:text="${#temporals.format(duty.date, 'yyyy.MM.dd.')}"></td>
 
@@ -205,25 +260,26 @@
                                 </td>
 
                                 <td>
-                                    <span th:if="${duty.mandatory}" class="badge bg-danger">
-                                        Kötelező
-                                    </span>
+                            <span th:if="${duty.mandatory}"
+                                  class="badge bg-danger">Kötelező</span>
 
-                                    <span th:unless="${duty.mandatory}" class="badge bg-info text-dark">
-                                        Önkéntes
-                                    </span>
+                                    <span th:unless="${duty.mandatory}"
+                                          class="badge bg-info text-dark">Önkéntes</span>
                                 </td>
 
                                 <td>
-                                    <span class="badge bg-warning text-dark"
-                                          th:text="${duty.status}"></span>
+                            <span class="badge bg-warning text-dark">
+                                Jóváhagyásra vár
+                            </span>
                                 </td>
-
                             </tr>
                             </tbody>
-
                         </table>
                     </div>
+
+                    <a th:href="@{/duties}" class="btn btn-outline-warning btn-sm">
+                        Ügyeletek kezelése
+                    </a>
 
                 </div>
             </div>
