@@ -148,7 +148,7 @@
 
 
         <!-- KÖZÖS: Saját ügyeletek -->
-        <div class="col-12 mb-4">
+        <div class="col-12 mb-4" th:if="${currentRole == 'NURSE' or currentRole == 'DOCTOR' or currentRole == 'SENIOR' or currentRole == 'DIRECTOR'}">
             <div class="card shadow-sm h-100 border-start border-info border-4">
                 <div class="card-body">
 

@@ -1,5 +1,9 @@
 package com.SFM.KIP.controller;
 
+import com.SFM.KIP.repository.DepartmentRepository;
+import com.SFM.KIP.repository.RoomRepository;
+import com.SFM.KIP.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,34 +14,24 @@ import java.util.List;
 @Controller
 public class AdminController {
 
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    @Autowired
+    private RoomRepository roomRepository;
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping("/admin")
     public String admin(Model model) {
-        return "admin";
+        return "admin/admin";
     }
 
-    @GetMapping("/employees")
-    public String employees(Model model) {
-        model.addAttribute("employees", List.of());
+    @GetMapping("/admin/dashboard")
+    public String dashboard(Model model) {
+        model.addAttribute("departmentCount", departmentRepository.count());
+        model.addAttribute("roomCount", roomRepository.count());
+        model.addAttribute("userCount", userRepository.count());
 
-        return "admin/employees";
-    }
-
-    @GetMapping("/employees/new")
-    public String newEmployee() {
-        return "admin/employee-form";
-    }
-
-    @PostMapping("/employees")
-    public String createEmployee(RedirectAttributes ra){
-        ra.addFlashAttribute("message", "Alkalmazott felvéve");
-
-        return "redirect:/admin/employees";
-    }
-
-    @PostMapping("/employees/{id}/role")
-    public String changeRole(@PathVariable Long id, @RequestParam String role, RedirectAttributes ra){
-        ra.addFlashAttribute("message", "Szerepkör módosítva");
-
-        return "redirect:/admin/employees";
+        return "admin/dashboard";
     }
 }

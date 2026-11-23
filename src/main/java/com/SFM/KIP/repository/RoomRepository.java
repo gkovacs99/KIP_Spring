@@ -8,4 +8,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
+    boolean existsByDepartment_Id(Long departmentId);
 }

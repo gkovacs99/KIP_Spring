@@ -16,13 +16,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByRole_NameAndActiveTrue(String rolename);
 
-    List<User> findBySpecializationAndActiveTrueAndActiveTrue(Specialization specialization);
+    List<User> findBySpecializationAndActiveTrue(Specialization specialization);
 
     List<User> findByRole_NameAndNameContainingIgnoreCaseAndActiveTrue(String roleName, String name);
 
     List<User> findByAssignedDoctor(User doctor);
 
     List<User> findAllByRole_Name(String roleName);
+
+    List<User> findAllByOrderByNameAsc();
+
+    List<User> findByActiveTrueOrderByNameAsc();
 
     @Query("""
     SELECT u
