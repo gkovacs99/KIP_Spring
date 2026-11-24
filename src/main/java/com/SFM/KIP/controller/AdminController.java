@@ -2,6 +2,7 @@ package com.SFM.KIP.controller;
 
 import com.SFM.KIP.repository.DepartmentRepository;
 import com.SFM.KIP.repository.RoomRepository;
+import com.SFM.KIP.repository.SpecializationRepository;
 import com.SFM.KIP.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,17 +21,15 @@ public class AdminController {
     private RoomRepository roomRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private SpecializationRepository specializationRepository;
 
     @GetMapping("/admin")
-    public String admin(Model model) {
-        return "admin/admin";
-    }
-
-    @GetMapping("/admin/dashboard")
     public String dashboard(Model model) {
         model.addAttribute("departmentCount", departmentRepository.count());
         model.addAttribute("roomCount", roomRepository.count());
         model.addAttribute("userCount", userRepository.count());
+        model.addAttribute("specializationCount", specializationRepository.count());
 
         return "admin/dashboard";
     }

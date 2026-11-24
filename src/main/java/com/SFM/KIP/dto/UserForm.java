@@ -19,6 +19,7 @@ public class UserForm {
     private Long departmentId;
     private Long specializationId;
     private Long assignedDoctorId;
+    private Long roomId;
 
     public Long getId() {
         return id;
@@ -107,4 +108,8 @@ public class UserForm {
     public void setAssignedDoctorId(Long assignedDoctorId) {
         this.assignedDoctorId = assignedDoctorId;
     }
+
+    public Long getRoomId() { return roomId; }
+
+    public void setRoomId(Long roomId) { this.roomId = roomId; }
 }

@@ -5,6 +5,7 @@ import com.SFM.KIP.dto.UserForm;
 import com.SFM.KIP.entity.*;
 import com.SFM.KIP.repository.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,34 +16,39 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/users")
 public class AdminUserController {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final DepartmentRepository departmentRepository;
-    private final SpecializationRepository specializationRepository;
-    private final PasswordEncoder passwordEncoder;
-
-    public AdminUserController(
-            UserRepository userRepository,
-            RoleRepository roleRepository,
-            DepartmentRepository departmentRepository,
-            SpecializationRepository specializationRepository,
-            PasswordEncoder passwordEncoder
-    ) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.departmentRepository = departmentRepository;
-        this.specializationRepository = specializationRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    @Autowired
+    private SpecializationRepository specializationRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RoomRepository roomRepository;
 
     // FELHASZNÁLÓK LISTÁZÁSA
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute(
-                "users",
-                userRepository.findAllByOrderByNameAsc()
-        );
+    public String list(
+            @RequestParam(required = false) String email,
+            Model model
+    ) {
+        if (email != null && !email.isBlank()) {
+            model.addAttribute(
+                    "users",
+                    userRepository.findByEmailContainingIgnoreCaseOrderByNameAsc(email.trim())
+            );
+        } else {
+            model.addAttribute(
+                    "users",
+                    userRepository.findAllByOrderByNameAsc()
+            );
+        }
+
+        model.addAttribute("email", email);
 
         return "admin/users";
     }
@@ -95,6 +101,10 @@ public class AdminUserController {
 
         if (user.getAssignedDoctor() != null) {
             form.setAssignedDoctorId(user.getAssignedDoctor().getId());
+        }
+
+        if (user.getRoom() != null) {
+            form.setRoomId(user.getRoom().getId());
         }
 
         model.addAttribute("userForm", form);
@@ -240,6 +250,41 @@ public class AdminUserController {
             user.setSpecialization(specialization);
         }
 
+        // Hozzárendelt rendelő: csak DOCTOR vagy NURSE szerepkörnél
+
+        user.setRoom(null);
+
+        if (("DOCTOR".equals(role.getName()) || "NURSE".equals(role.getName())) && form.getRoomId() != null) {
+
+            Room room = roomRepository.findById(form.getRoomId())
+                    .orElse(null);
+
+            if (room == null) {
+                model.addAttribute("error", "A kiválasztott szoba nem található.");
+                model.addAttribute("pageTitle",
+                        isNew ? "Új felhasználó" : "Felhasználó szerkesztése");
+
+                addFormAttributes(model);
+                return "admin/user-form";
+            }
+
+            // A szobának és a felhasználónak ugyanahhoz az osztályhoz kell tartoznia.
+            if (department == null ||
+                    !room.getDepartment().getId().equals(department.getId())) {
+
+                model.addAttribute("error",
+                        "A kiválasztott szoba nem ehhez az osztályhoz tartozik.");
+
+                model.addAttribute("pageTitle",
+                        isNew ? "Új felhasználó" : "Felhasználó szerkesztése");
+
+                addFormAttributes(model);
+                return "admin/user-form";
+            }
+
+            user.setRoom(room);
+        }
+
         // Hozzárendelt orvos: csak NURSE szerepkörnél
 
         user.setAssignedDoctor(null);
@@ -311,9 +356,7 @@ public class AdminUserController {
         model.addAttribute("roles", roleRepository.findAll());
         model.addAttribute("departments", departmentRepository.findAll());
         model.addAttribute("specializations", specializationRepository.findAll());
-        model.addAttribute(
-                "doctors",
-                userRepository.findByRole_NameAndActiveTrue("DOCTOR")
-        );
+        model.addAttribute("rooms", roomRepository.findAll());
+        model.addAttribute("doctors", userRepository.findByRole_NameAndActiveTrue("DOCTOR"));
     }
 }

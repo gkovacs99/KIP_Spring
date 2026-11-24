@@ -148,6 +148,7 @@
 
                             <select id="departmentId"
                                     class="form-select"
+                                    name="departmentId"
                                     th:field="*{departmentId}">
 
                                 <option value="">Nincs hozzárendelve</option>
@@ -181,9 +182,37 @@
                             </select>
                         </div>
 
+                        <!-- Rendelő az orvoskhoz vagy nővérekhetóz -->
+                        <div class="mb-3" id="roomGroup">
+
+                            <label for="roomId" class="form-label">
+                                Rendelő / Szoba
+                            </label>
+
+                            <select class="form-select"
+                                    id="roomId"
+                                    name="roomId">
+
+                                <option value="">Válassz szobát</option>
+
+                                <option th:each="room : ${rooms}"
+                                        th:value="${room.id}"
+                                        th:data-department-id="${room.department.id}"
+                                        th:text="${room.name}"
+                                        th:selected="${userForm.roomId != null and userForm.roomId == room.id}">
+                                </option>
+
+                            </select>
+
+                            <div class="form-text">
+                                Csak a kiválasztott osztályhoz tartozó szobák jelennek meg.
+                            </div>
+
+                        </div>
+
                         <!-- Nővérhez rendelt orvos -->
 
-                        <div class="mb-3" id="doctorGroup">
+                        <div class="mb-3" id="doctorGroup" th:if="${roles.?[name == 'NURSE'].![id].contains(userForm.roleId)}">
                             <label for="assignedDoctorId" class="form-label">
                                 Hozzárendelt orvos
                             </label>
@@ -245,40 +274,73 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
 
-        const roleSelect = document.getElementById("roleId");
+        const departmentSelect = document.getElementById("departmentId");
+        const roomSelect = document.getElementById("roomId");
 
-        const specializationGroup =
-            document.getElementById("specializationGroup");
-
-        const doctorGroup =
-            document.getElementById("doctorGroup");
-
-        const specializationSelect =
-            document.getElementById("specializationId");
-
-        const doctorSelect =
-            document.getElementById("assignedDoctorId");
-
-        function updateRoleFields() {
-
-            const selectedOption =
-                roleSelect.options[roleSelect.selectedIndex];
-
-            const role = selectedOption.dataset.role;
-
-            const isDoctor = role === "DOCTOR";
-            const isNurse = role === "NURSE";
-
-            specializationGroup.classList.toggle("d-none", !isDoctor);
-            doctorGroup.classList.toggle("d-none", !isNurse);
-
-            specializationSelect.disabled = !isDoctor;
-            doctorSelect.disabled = !isNurse;
+        if (!departmentSelect || !roomSelect) {
+            return;
         }
 
-        roleSelect.addEventListener("change", updateRoleFields);
+        // Az összes szoba eltárolása az eredeti HTML-elemekből.
+        const allRoomOptions = Array.from(roomSelect.querySelectorAll(
+            "option[data-department-id]"
+        ));
 
-        updateRoleFields();
+        const placeholder = roomSelect.querySelector('option[value=""]')
+            .cloneNode(true);
+
+        function filterRooms() {
+
+            const selectedDepartmentId = departmentSelect.value;
+            const previouslySelectedRoom = roomSelect.value;
+
+            // Régi opciók eltávolítása.
+            roomSelect.replaceChildren();
+
+            // Alapértelmezett opció visszaállítása.
+            roomSelect.appendChild(placeholder.cloneNode(true));
+
+            // Ha nincs kiválasztott osztály, nem választható szoba.
+            if (!selectedDepartmentId) {
+                roomSelect.disabled = true;
+                return;
+            }
+
+            roomSelect.disabled = false;
+
+            let previousRoomStillAvailable = false;
+
+            allRoomOptions.forEach(function (option) {
+
+                // Csak az adott osztályhoz tartozó szobákat jelenítjük meg.
+                if (option.dataset.departmentId === selectedDepartmentId) {
+
+                    const newOption = option.cloneNode(true);
+
+                    roomSelect.appendChild(newOption);
+
+                    if (newOption.value === previouslySelectedRoom) {
+                        previousRoomStillAvailable = true;
+                    }
+                }
+            });
+
+            // Ha a korábban kiválasztott szoba nem tartozik az új osztályhoz,
+            // töröljük a kiválasztását.
+            if (previousRoomStillAvailable) {
+                roomSelect.value = previouslySelectedRoom;
+            } else {
+                roomSelect.value = "";
+            }
+        }
+
+        // Osztályválasztás figyelése.
+        departmentSelect.addEventListener("change", filterRooms);
+
+        // Oldalbetöltéskor is lefuttatjuk, hogy szerkesztésnél
+        // a már hozzárendelt szoba megfelelően jelenjen meg.
+        filterRooms();
+
     });
 </script>
 

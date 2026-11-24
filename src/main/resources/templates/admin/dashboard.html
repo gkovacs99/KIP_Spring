@@ -16,9 +16,6 @@
 <nav class="navbar navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" th:href="@{/admin}">KIP Admin</a>
-        <a class="btn btn-outline-light btn-sm" th:href="@{/admin}">
-            Vissza az adminisztrációhoz
-        </a>
     </div>
 </nav>
 
@@ -63,6 +60,19 @@
                     <a th:href="@{/admin/rooms}"
                        class="btn btn-sm btn-outline-primary mt-3">
                         Szobák kezelése
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-2">Specializációk száma</p>
+                    <h2 class="fw-bold" th:text="${specializationCount}">0</h2>
+                    <a th:href="@{/admin/specializations}"
+                       class="btn btn-sm btn-outline-primary mt-3">
+                        Specializációk kezelése
                     </a>
                 </div>
             </div>

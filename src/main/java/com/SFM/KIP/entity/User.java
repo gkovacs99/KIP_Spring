@@ -43,6 +43,10 @@ public class User {
     @JoinColumn(name = "department_id")
     private Department department;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
+
     // csak orvosoknál
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialization_id")

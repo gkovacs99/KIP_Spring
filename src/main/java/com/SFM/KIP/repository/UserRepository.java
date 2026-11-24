@@ -28,6 +28,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByActiveTrueOrderByNameAsc();
 
+    boolean existsBySpecialization_Id(Long specializationId);
+
+    List<User> findByEmailContainingIgnoreCaseOrderByNameAsc(String email);
+
     @Query("""
     SELECT u
     FROM User u
